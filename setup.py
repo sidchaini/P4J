@@ -3,6 +3,7 @@ import io
 import os
 from setuptools import setup
 from setuptools.extension import Extension
+import platform
 
 try:
     import numpy as np
@@ -17,7 +18,10 @@ if os.name == 'nt':  # Windows, assuming MSVC compiler
     compiler_args = ['/Ox', '/fp:fast']
 elif os.name == 'posix':  # UNIX, assuming GCC compiler
     libraries = ['m']
-    compiler_args = ['-O3', '-ffast-math', '-march=native', '-mtune=native', '-flto']
+    if platform.system() == 'Darwin' and platform.processor() == 'arm': # if it's a mac with apple silicon
+        compiler_args = ['-O3', '-ffast-math', '-flto']
+    else:
+        compiler_args = ['-O3', '-ffast-math', '-march=native', '-mtune=native', '-flto']
 else:
     raise Exception('Unsupported operating system')
 
